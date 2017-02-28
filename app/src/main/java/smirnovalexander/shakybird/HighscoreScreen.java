@@ -24,8 +24,8 @@ public class HighscoreScreen extends GLScreen {
     public HighscoreScreen(Game game) {
         super(game);
 
-        guiCam = new Camera2D(glGraphics, 320, 480);
-        backBounds = new Rectangle(0, 0, 64, 64);
+        guiCam = new Camera2D(glGraphics, 640, 960);
+        backBounds = new Rectangle(0, 0, 128, 128);
         touchPoint = new Vector2();
         batcher = new SpriteBatcher(glGraphics, 100);
         highScores = new String[5];
@@ -33,7 +33,7 @@ public class HighscoreScreen extends GLScreen {
             highScores[i] = (i + 1) + ". " + Settings.highscores[i];
             xOffset = Math.max(highScores[i].length() * Assets.font.glyphWidth, xOffset);
         }
-        xOffset = 160 - xOffset / 2;
+        xOffset = 300 - xOffset / 2;
     }
 
     @Override
@@ -48,6 +48,7 @@ public class HighscoreScreen extends GLScreen {
 
             if(event.type == TouchEvent.TOUCH_UP) {
                 if(OverlapTester.pointInRectangle(backBounds, touchPoint)) {
+                    Assets.playSound(Assets.clickSound);
                     game.setScreen(new MainMenuScreen(game));
                     return;
                 }
@@ -64,22 +65,22 @@ public class HighscoreScreen extends GLScreen {
         gl.glEnable(GL10.GL_TEXTURE_2D);
 
         batcher.beginBatch(Assets.background);
-        batcher.drawSprite(160, 240, 320, 480, Assets.backgroundRegion);
+        batcher.drawSprite(320, 480, 640, 960, Assets.backgroundRegion);
         batcher.endBatch();
 
         gl.glEnable(GL10.GL_BLEND);
         gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 
-        batcher.beginBatch(Assets.itemsBad);
-        batcher.drawSprite(160, 360, 300, 33, Assets.highScoresRegion);
+        batcher.beginBatch(Assets.items);
+        batcher.drawSprite(330, 860, 500, 70, Assets.highScoresRegion);
 
-        float y = 140;
+        float y = 520;
         for(int i = 4; i >= 0; i--) {
-            Assets.font.drawText(batcher, highScores[i], xOffset, y);
-            y += Assets.font.glyphHeight+20;
+            Assets.font.drawText(batcher, highScores[i], xOffset, y, 2);
+            y += Assets.font.glyphHeight+40;
         }
 
-        batcher.drawSprite(32, 32, 64, 64, Assets.arrow);
+        batcher.drawSprite(64, 64, 128, 128, Assets.arrow);
         batcher.endBatch();
 
         gl.glDisable(GL10.GL_BLEND);

@@ -6,8 +6,10 @@ import javax.microedition.khronos.opengles.GL10;
 
 import smirnovalexander.framework.Game;
 import smirnovalexander.framework.Input.TouchEvent;
+import smirnovalexander.framework.gl.Animation;
 import smirnovalexander.framework.gl.Camera2D;
 import smirnovalexander.framework.gl.SpriteBatcher;
+import smirnovalexander.framework.gl.TextureRegion;
 import smirnovalexander.framework.impl.GLScreen;
 import smirnovalexander.framework.math.OverlapTester;
 import smirnovalexander.framework.math.Rectangle;
@@ -16,17 +18,20 @@ import smirnovalexander.framework.math.Vector2;
 public class MainMenuScreen extends GLScreen {
     Camera2D guiCam;
     SpriteBatcher batcher;
-    Rectangle SettingsBounds;
+    Rectangle soundBounds;
     Rectangle playBounds;
     Rectangle highscoresBounds;
     Vector2 touchPoint;
+    public final Bird bird;
 
     public MainMenuScreen(Game game) {
         super(game);
+        this.bird = new Bird(320, 575);
         guiCam = new Camera2D(glGraphics, 640, 960);
         batcher = new SpriteBatcher(glGraphics, 100);
-        highscoresBounds = new Rectangle(200, 310, 200, 150);
-        SettingsBounds = new Rectangle(200, 110, 200, 150);
+        playBounds = new Rectangle(200, 320, 200, 150);
+        highscoresBounds = new Rectangle(30, 110, 200, 120);
+        soundBounds = new Rectangle(400, 110, 200, 120);
         touchPoint = new Vector2();
     }
 
@@ -35,6 +40,10 @@ public class MainMenuScreen extends GLScreen {
         List<TouchEvent> touchEvents = game.getInput().getTouchEvents();
         game.getInput().getKeyEvents();
 
+        if (!Assets.music.isPlaying() && Settings.soundEnabled) {
+            Assets.music.play();
+        }
+
         int len = touchEvents.size();
         for(int i = 0; i < len; i++) {
             TouchEvent event = touchEvents.get(i);
@@ -42,16 +51,25 @@ public class MainMenuScreen extends GLScreen {
                 touchPoint.set(event.x, event.y);
                 guiCam.touchToWorld(touchPoint);
 
+                if(OverlapTester.pointInRectangle(playBounds, touchPoint)) {
+                    Assets.playSound(Assets.clickSound);
+                    Assets.music.reset();
+                    game.setScreen(new GameScreen(game));
+                    return;
+                }
+
                 if(OverlapTester.pointInRectangle(highscoresBounds, touchPoint)) {
                     Assets.playSound(Assets.clickSound);
                     game.setScreen(new HighscoreScreen(game));
                     return;
                 }
-
-                if(OverlapTester.pointInRectangle(SettingsBounds, touchPoint)) {
+                if (OverlapTester.pointInRectangle(soundBounds, touchPoint)) {
                     Assets.playSound(Assets.clickSound);
-                    game.setScreen(new SettingsScreen(game));
-                    return;
+                    Settings.soundEnabled = !Settings.soundEnabled;
+                    if (Settings.soundEnabled)
+                        Assets.music.play();
+                    else
+                        Assets.music.pause();
                 }
             }
         }
@@ -68,17 +86,23 @@ public class MainMenuScreen extends GLScreen {
         batcher.beginBatch(Assets.background);
         batcher.drawSprite(320, 480, 640, 960, Assets.backgroundRegion);
         batcher.endBatch();
-
         gl.glEnable(GL10.GL_BLEND);
         gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 
         batcher.beginBatch(Assets.items);
 
-        batcher.drawSprite(340, 820, 500, 200, Assets.logo);
-        batcher.drawSprite(320, 650, 150, 150, Assets.logoBird);
-        batcher.drawSprite(320, 480, 200, 132, Assets.start);
-        batcher.drawSprite(320, 330, 200, 132, Assets.highScores);
-        batcher.drawSprite(320, 180, 200, 132, Assets.settings);
+        TextureRegion keyFrame;
+        keyFrame = Assets.birdJump.getKeyFrame(bird.stateTime, Animation.ANIMATION_LOOPING);
+        batcher.drawSprite(320, 600, 100, 100, keyFrame);
+        bird.update(deltaTime);
+
+        batcher.drawSprite(340, 820, 600, 200, Assets.logo);
+        batcher.drawSprite(320, 400, 200, 132, Assets.start);
+        batcher.drawSprite(150, 180, 200, 132, Assets.highScores);
+        if (Settings.soundEnabled)
+            batcher.drawSprite(500, 180, 200, 132, Assets.soundOn);
+        else
+            batcher.drawSprite(500, 180, 200, 132, Assets.soundOff);
 
         batcher.endBatch();
 

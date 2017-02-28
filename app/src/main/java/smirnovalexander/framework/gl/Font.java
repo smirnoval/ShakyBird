@@ -24,7 +24,7 @@ public class Font {
         }        
     }
 
-    public void drawText(SpriteBatcher batcher, String text, float x, float y) {
+    public void drawText(SpriteBatcher batcher, String text, float x, float y, float multiplier) {
         int len = text.length();
         for(int i = 0; i < len; i++) {
             int c = text.charAt(i) - ' ';
@@ -32,8 +32,8 @@ public class Font {
                 continue;
             
             TextureRegion glyph = glyphs[c];
-            batcher.drawSprite(x, y, glyphWidth, glyphHeight, glyph);
-            x += glyphWidth;
+            batcher.drawSprite(x, y, glyphWidth*multiplier, glyphHeight*multiplier, glyph);
+            x += glyphWidth*multiplier;
         }
     }
 }

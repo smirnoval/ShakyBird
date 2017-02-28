@@ -10,7 +10,7 @@ import smirnovalexander.framework.FileIO;
 
 public class Settings {
     public static boolean soundEnabled = true;
-    public final static int[] highscores = new int[] { 5, 4, 3, 2, 1 };
+    public final static int[] highscores = new int[] { 0, 0, 0, 0, 0 };
     public final static String file = ".shakybird";
 
     public static void load(FileIO files) {

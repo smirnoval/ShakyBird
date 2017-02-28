@@ -17,5 +17,7 @@ public interface Music {
 
     public boolean isLooping();
 
+    public void reset();
+
     public void dispose();
 }
