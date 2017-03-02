@@ -12,7 +12,6 @@ import smirnovalexander.framework.impl.GLScreen;
 import smirnovalexander.framework.math.OverlapTester;
 import smirnovalexander.framework.math.Rectangle;
 import smirnovalexander.framework.math.Vector2;
-import smirnovalexander.shakybird.World.WorldListener;
 
 public class GameScreen extends GLScreen {
     static final int GAME_READY = 0;
@@ -25,7 +24,6 @@ public class GameScreen extends GLScreen {
     Vector2 touchPoint;
     SpriteBatcher batcher;
     World world;
-    WorldListener worldListener;
     WorldRenderer renderer;
     Rectangle pauseBounds;
     Rectangle resumeBounds;
@@ -39,14 +37,7 @@ public class GameScreen extends GLScreen {
         guiCam = new Camera2D(glGraphics, 640, 960);
         touchPoint = new Vector2();
         batcher = new SpriteBatcher(glGraphics, 1000);
-        worldListener = new WorldListener() {
-            public void jump() {}
-
-            public void hit() {
-                Assets.playSound(Assets.hitSound);
-            }
-        };
-        world = new World(worldListener);
+        world = new World();
         renderer = new WorldRenderer(glGraphics, batcher, world);
         pauseBounds = new Rectangle(0, 820, 128, 128);
         resumeBounds = new Rectangle(120, 450, 400, 100);

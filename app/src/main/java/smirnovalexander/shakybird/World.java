@@ -10,10 +10,6 @@ import smirnovalexander.framework.math.OverlapTester;
 import smirnovalexander.framework.math.Vector2;
 
 public class World {
-    public interface WorldListener {
-        public void jump();
-        public void hit();
-    }
 
     public static final int WORLD_STATE_RUNNING = 0;
     public static final int WORLD_STATE_GAME_OVER = 1;
@@ -23,26 +19,22 @@ public class World {
     public final List<Pipe> pipes;
     public final List<Score> scores;
     public final List<Platform> platforms;
-    public final WorldListener listener;
     public final Random rand;
 
-    public float heightSoFar;
     public int score;
     public int state;
     public double generatorTime;
     public double jumpTime;
 
-    public World(WorldListener listener) {
+    public World() {
         this.bird = new Bird(320, 575);
         this.pipes = new ArrayList<Pipe>();
         this.scores = new ArrayList<Score>();
         this.platforms = new ArrayList<Platform>();
-        this.listener = listener;
         rand = new Random();
         generatorTime=System.nanoTime();
         jumpTime = System.nanoTime();
 
-        this.heightSoFar = 0;
         this.score = 0;
         this.state = WORLD_STATE_RUNNING;
 
@@ -94,7 +86,6 @@ public class World {
                 bird.jumpWithoutAnimation();
         }
         bird.update(deltaTime);
-        heightSoFar = Math.max(bird.position.y, heightSoFar);
     }
 
     private void updatePipe(float deltaTime) {
@@ -145,7 +136,6 @@ public class World {
             if (OverlapTester.overlapRectangles(pipe.bounds, bird.bounds)) {
                 Assets.playSound(Assets.hitSound);
                 bird.hit();
-                listener.hit();
             }
         }
     }
