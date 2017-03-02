@@ -85,11 +85,13 @@ public class World {
 
     private void updateBird(float deltaTime, List<Input.TouchEvent> touchEvents) {
         if (touchEvents.size() > 0 && bird.state != Bird.BIRD_STATE_HIT) {
-            bird.birdJump();
             if (System.nanoTime() - jumpTime >= 250000000) {
+                bird.jump();
                 Assets.playSound(Assets.jumpSound);
                 jumpTime = System.nanoTime();
             }
+            else
+                bird.jumpWithoutAnimation();
         }
         bird.update(deltaTime);
         heightSoFar = Math.max(bird.position.y, heightSoFar);
@@ -150,8 +152,11 @@ public class World {
 
     private void checkGameOver() {
         if (bird.position.y <= 80 || bird.position.y >= 960) {
+            if (bird.state != Bird.BIRD_STATE_HIT) {
+                bird.hit();
+                Assets.playSound(Assets.hitSound);
+            }
             Assets.playSound(Assets.gameOverSound);
-            bird.hit();
             state = WORLD_STATE_GAME_OVER;
         }
     }

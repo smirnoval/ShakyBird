@@ -6,9 +6,9 @@ public class Bird extends DynamicGameObject{
     public static final int BIRD_STATE_JUMP = 0;
     public static final int BIRD_STATE_FALL = 1;
     public static final int BIRD_STATE_HIT = 2;
-    public static final float BIRD_JUMP_VELOCITY = 400;
-    public static final float BIRD_WIDTH = 70;
-    public static final float BIRD_HEIGHT = 70;
+    public static final float BIRD_JUMP_VELOCITY = 450;
+    public static final float BIRD_WIDTH = 65;
+    public static final float BIRD_HEIGHT = 65;
 
     int state;
     float stateTime;
@@ -47,9 +47,13 @@ public class Bird extends DynamicGameObject{
         stateTime = 0;
     }
 
-    public void birdJump() {
+    public void jump() {
         velocity.y = BIRD_JUMP_VELOCITY;
         state = BIRD_STATE_JUMP;
         stateTime = 0;
+    }
+
+    public void jumpWithoutAnimation() {
+        velocity.y = BIRD_JUMP_VELOCITY;
     }
 }
